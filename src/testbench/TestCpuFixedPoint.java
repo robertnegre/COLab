@@ -8,7 +8,7 @@ import timing.*;
 public class TestCpuFixedPoint {
     public static void main(String[] args)
     {
-        int size = 1000000;
+        int size = 100000000;
         ITimer timer = new Timer();
         ILog log = new ConsoleLogger();
         TimeUnit Milisecond = TimeUnit.Mili;
