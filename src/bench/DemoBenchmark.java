@@ -40,7 +40,8 @@ public class DemoBenchmark implements IBenchmark {
 
     @Override
     public void clean() {
-
+        array = null;
+        System.gc();
     }
 
     @Override
