@@ -2,6 +2,11 @@ package bench;
 
 public class DummyBenchmark implements IBenchmark {
     @Override
+    public long score(Object... params) {
+        return 0;
+    }
+
+    @Override
     public void run() {
 
     }

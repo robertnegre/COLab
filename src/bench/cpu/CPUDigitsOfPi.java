@@ -43,6 +43,11 @@ public class CPUDigitsOfPi implements IBenchmark {
 
 
     @Override
+    public long score(Object... params) {
+        return 0;
+    }
+
+    @Override
     public void run() {
 
     }
@@ -83,9 +88,8 @@ public class CPUDigitsOfPi implements IBenchmark {
 
     }
 
-    @Override
-    public void warmUp() {
+    public void warmUp()
+    {
         BigDecimal result=PIHighPrecision(10000);
     }
-
 }

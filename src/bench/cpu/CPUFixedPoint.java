@@ -1,30 +1,32 @@
 package bench.cpu;
 
 import bench.*;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+public class CPUFixedPoint implements IBenchmark{
 
-public class CPUFixedPoint implements IBenchmark {
-
-    void array_test(int size) {
+    void array_test(int size)
+    {
         int k;
-        int[] array1 = new int[size];
-        int[] array2 = new int[size];
-        for (int i = 0; i < size; i++) {
-            k = array2[i];
-            array2[i] = array1[i];
+        int[] array1=new int [size];
+        int[] array2=new int [size];
+        for(int i=0; i<size; i++)
+        {
+            k=array2[i];
+            array2[i]=array1[i];
             array1[i] = k;
         }
     }
 
-    private void branch_test(int size) {
+    private void branch_test(int size)
+    {
         int[] num = {0, 1, 2, 3};
-        int count = 0;
-        int j = 0;
-        while (count < size) {
+        int count=0;
+        int j=0;
+        while (count<size)
+        {
             if (j == 1) {
                 j = num[2];
             } else {
@@ -46,20 +48,25 @@ public class CPUFixedPoint implements IBenchmark {
 
 
     @Override
+    public long score(Object... params) {
+        return 0;
+    }
+
+    @Override
     public void run() {
         throw new IllegalStateException();
     }
 
     @Override
     public void run(Object... params) {
-        int options = (Integer) params[0];
+        int options = (Integer)params[0];
 
-        switch (options) {
+        switch(options) {
             case 0:
-                branch_test((Integer) params[1]);
+                branch_test((Integer)params[1]);
                 break;
             case 1:
-                array_test((Integer) params[1]);
+                array_test((Integer)params[1]);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown option");

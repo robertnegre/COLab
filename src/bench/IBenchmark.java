@@ -2,6 +2,8 @@ package bench;
 
 public interface IBenchmark {
 
+    long score(Object... params);
+
     // the method which will contain the core of the code used to actually benchmark
     // a hardware component
     void run();

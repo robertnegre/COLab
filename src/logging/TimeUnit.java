@@ -22,13 +22,13 @@ public enum TimeUnit
         switch (unit)
         {
             case Micro:
-                return "us";
+                return " us";
             case Mili:
-                return "ms";
+                return " ms";
             case Sec:
-                return "s";
+                return " s";
             default:
-                return "ns";
+                return " ns";
         }
     }
 }

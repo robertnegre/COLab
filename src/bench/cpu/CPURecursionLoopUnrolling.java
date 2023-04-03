@@ -1,107 +1,146 @@
 package bench.cpu;
 
-import bench.IBenchmark;
+import bench.*;
 
-public class CPURecursionLoopUnrolling implements IBenchmark {
 
+public class CPURecursionLoopUnrolling implements IBenchmark{
+    private long start;
     private long size;
-    private boolean useUnrolling;
-    private int unrollLevel;
+
+    private long helper;
+    private long helper1;
+    private boolean prime(long number)
+    {
+        if(number == 0)
+            return false;
+        if(number == 1)
+            return false;
+        if(number == 2)
+            return true;
+        if(number % 2 == 0)
+            return false;
+        for(long i = 3; i *i < number; i+=2)
+        {
+            if(number%i==0)
+                return false;
+        }
+        return true;
+
+    }
+    private long find_next_prime(long number, long size)
+    {
+        for (long i=number+1; i < size; i++)
+        {
+            if(prime(i))
+                return i;
+        }
+        return -1;
+    }
+    private long recursive(long start, long size, int counter) {
+        try
+        {
+            if (start >= size) {
+                return 0;
+            }
+            long next_prime = find_next_prime(start, size);
+            if (next_prime == -1) {
+                return 0;
+            }
+            counter++;
+            return next_prime + recursive(next_prime, size, counter);
+        } catch (StackOverflowError ignored) {
+
+        } catch (NoClassDefFoundError e) {
+        }
+        helper=counter;
+        helper1=start;
+        return 0;
+    }
+    private void print_recursive(long start, long size, long counter)
+    {
+        System.out.println("Reached no. " + start + "/" + size + " after " + counter + " calls");
+    }
+    private long recursiveUnrolled(long start, int unrollLevel, long size, int counter) {
+        try {
+            long sum = 0;
+            long next_prime = start;
+            long copy=unrollLevel;
+            while (start < size && copy > 0) {
+                if(next_prime<0)
+                    return 0;
+                sum += next_prime;
+                next_prime = find_next_prime(next_prime, size);
+                copy--;
+            }
+            counter++;
+            if(next_prime>0)
+            {
+                helper = counter;
+                helper1 = next_prime;
+            }
+            if (start < size) {
+                return sum + recursiveUnrolled(next_prime, unrollLevel, size, counter);
+            }
+
+
+        } catch (StackOverflowError e) {
+        }
+        catch (NoClassDefFoundError e) {
+        }
+        return 0;
+    }
+    private void print_recursiveUnrolled(long start, long size, long counter)
+    {
+        System.out.println("Reached no. " + start + "/" + size + " after " + counter + " calls");
+    }
+
+    @Override
+    public long score(Object... params) {
+        double size1 = size;
+        double number = helper1;
+        double time = (long)params[0]/1000000.0;
+        double up = number*size1;
+        return (long) ((long)up/(time));
+    }
 
     @Override
     public void run() {
-        run(new Object[0]);
+
     }
 
     @Override
     public void run(Object... params) {
-        if (params.length < 1) {
-            throw new IllegalArgumentException("Missing parameter: useUnrolling");
+        Boolean option = (Boolean)params[0];
+
+        if(!option) {
+            recursive(start, size, 0);
+            print_recursive(helper1, size,helper);
         }
-        useUnrolling = (boolean) params[0];
-        if (useUnrolling) {
-            if (params.length < 2) {
-                throw new IllegalArgumentException("Missing parameter: unrollLevel");
-            }
-            unrollLevel = (int) params[1];
-            recursiveUnrolled(1, unrollLevel, (int) size, 0);
-        } else {
-            recursive(1, size, 0);
+        else {
+            recursiveUnrolled(start, (Integer) params[1], size, 0);
+            print_recursiveUnrolled(helper1, size,helper);
         }
     }
 
     @Override
     public void initialize(Object... params) {
-        if (params.length < 1) {
-            throw new IllegalArgumentException("Missing parameter: size");
-        }
-        size = (long) params[0];
+        start = (Integer)params[0];
+        size = (long)params[1];
     }
 
     @Override
     public void clean() {
-        // no cleanup needed
+
     }
 
     @Override
     public void cancel() {
-        // no cancellation logic needed
+
     }
 
     @Override
     public void warmUp() {
-        // no warm up needed
-    }
-
-    private long recursive(long start, long size, int counter) {
-        if (start > size) {
-            return 0;
-        }
-        if (isPrime(start)) {
-            counter++;
-        }
-        try {
-            return recursive(start + 1, size, counter);
-        } catch (StackOverflowError e) {
-            System.out.println("Reached nr " + start + "/" + size + " after " + counter + " calls.");
-            return 0;
-        }
-    }
-
-    private long recursiveUnrolled(long start, int unrollLevel, int size, int counter) {
-        if (start > size) {
-            return 0;
-        }
-        int numPrimes = 0;
-        for (int i = 0; i < unrollLevel; i++) {
-            if (isPrime(start + i)) {
-                numPrimes++;
-            }
-            if (start + i >= size) {
-                break;
-            }
-        }
-        counter++;
-        try {
-            return numPrimes + recursiveUnrolled(start + unrollLevel, unrollLevel, size, counter);
-        } catch (StackOverflowError e) {
-            System.out.println("Reached nr " + (start + unrollLevel - 1) + "/" + size + " at " + unrollLevel +
-                    " levels after " + counter + " calls.");
-            return numPrimes;
-        }
-    }
-
-    private boolean isPrime(long x) {
-        if (x <= 2) {
-            return true;
-        }
-        for (int i = 2; i <= Math.sqrt(x); i++) {
-            if (x % i == 0) {
-                return false;
-            }
-        }
-        return true;
+        initialize(1,(long)1000000);
+        run(true, 5);
     }
 }
-
-
